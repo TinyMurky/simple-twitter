@@ -2,29 +2,15 @@
   <div class="col-2 px-0 me-4 d-flex flex-column align-items-end">
     {{>left_navbar}}
   </div>
-  <div class="col-3 border-end border-start px-0 mx-0">
+  <div class="col-3 border-end border-start px-0 mx-0" >
     {{>title route = 'normal-title' titleName = '上線使用者'}}
-    <div
-      class="d-flex justify-content-start align-items-center gap-2 p-3 fs-6 onlineUser">
-      <img src="/images/icons/ac_icon.svg" alt="" />
-      <p class="m-0 p-0">Apple</p>
-      <p class="text-secondary m-0 p-0">@apple</p>
-    </div>
-    <div
-      class="d-flex justify-content-start align-items-center gap-2 p-3 fs-6 onlineUser">
-      <img src="/images/icons/ac_icon.svg" alt="" />
-      <p class="m-0 p-0">Apple</p>
-      <p class="text-secondary m-0 p-0">@apple</p>
+    <div id="online-board">
+
     </div>
   </div>
   <div class="col px-0 ms-0 me-0 border-end position-relative" id="chatroom">
     {{>title route = 'normal-title' titleName = '公開聊天室'}}
-    <ul class="m-0 p-3">
-      <li
-        class="d-flex justify-content-center align-items-center"
-        id="user-status">
-        <p>Apple 上線</p>
-      </li>
+    <ul class="m-0 p-3" id="chat-space">
       <li class="mb-3" id="otherUser">
         <div class="d-flex align-items-end gap-2">
           <img src="/images/icons/ac_icon.svg" alt="" />
@@ -58,7 +44,86 @@
   </div>
 </div>
 
+<style>
+  #online-board img {
+    width: 40px;
+    height: 40px;
+    
+    border-radius: 50%;
+  }
+</style>
+
 
 <script>
-    const socket = io('http://localhost:3030')
+    const onlineBoardTitle = document.querySelectorAll('.partial-title')[0]
+    const onlineBoard = document.querySelector('#online-board')
+    const chatSpace = document.querySelector('#chat-space')
+    
+    const socket = io('http://localhost:3030', {
+      withCredentials: true
+    })
+
+    socket.on('show user online', onlineUsers => {
+      // 顯示在線的使用者
+      const countOnlineUsers = onlineUsers.length
+
+      onlineBoard.innerHTML = ''
+      onlineBoardTitle.innerHTML = ''
+      
+      for (const user of onlineUsers.values()) {
+         const onlineUserHtml = `
+        <div
+        class="d-flex justify-content-start align-items-center gap-2 p-3 fs-6 onlineUser" id="user${user.id}">
+        <img src="${user.avatar}" alt="" />
+        <p class="m-0 p-0">${user.name}</p>
+        <p class="text-secondary m-0 p-0">@${user.account}</p>
+        </div>
+        `
+        const newLoginUserElement = document.createElement('div')
+        newLoginUserElement.innerHTML = onlineUserHtml
+
+        onlineBoard.appendChild(newLoginUserElement)
+      }
+
+      onlineBoardTitle.innerHTML = `
+        <h4 class="m-0">
+         上線使用者(${countOnlineUsers})
+        </h4>
+      `
+    })
+
+    socket.on('user connect', user => {
+      // 使用者上線時，在聊天室顯示提示訊息
+      const connectMessage = `
+          <li
+          class="d-flex justify-content-center align-items-center"
+          id="user-status">
+          <p>${user.name} 上線</p>
+          </li>
+        `
+      var connectMessageElement = document.createElement('div')
+      connectMessageElement.innerHTML = connectMessage
+      connectMessageElement = connectMessageElement.querySelector('li')
+
+      chatSpace.appendChild(connectMessageElement)
+    })
+
+    //使用者下線時，將使用者從上線清單中移除
+    socket.on('user disconnect', (onlineUsers, user) => {
+      const disconnectUser = document.querySelector(`#user${user}`)
+      const countOnlineUsers = onlineUsers.length
+      console.log(onlineUsers)
+
+      onlineBoardTitle.innerHTML = ''
+
+      disconnectUser.remove() 
+
+      onlineBoardTitle.innerHTML = `
+        <h4 class="m-0">
+         上線使用者(${countOnlineUsers})
+        </h4>
+      `
+    })
 </script>
+
+

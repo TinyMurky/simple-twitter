@@ -25,6 +25,11 @@ const { socketModule } = require('./sockets/socket')
 const app = express()
 const server = http.createServer(app)
 const io = new Server(server)
+const sessionMiddleware = session({
+  secret: process.env.SESSION_SECRET || 'I_really_need_to_pass_this_test',
+  resave: false,
+  saveUninitialized: true
+})
 
 const PORT = process.env.PORT || 3000
 const SOCKET_PORT = process.env.SOCKET_PORT || 3030
@@ -44,11 +49,7 @@ app.use(express.json()) // for test
 app.use(express.static(path.join(__dirname, 'public'))) // for css and 前端js
 
 app.use(cookieParser()) // 用來找到JWS cookie
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'I_really_need_to_pass_this_test',
-  resave: false,
-  saveUninitialized: true
-}))
+app.use(sessionMiddleware)
 app.use(flash())
 app.use(passport.initialize())
 app.use(passport.session())
@@ -61,13 +62,22 @@ app.use((req, res, next) => {
   next()
 })
 
-socketModule(io, SOCKET_PORT)
+const wrap = (middleware) => (socket, next) =>
+  middleware(socket.request, {}, next)
+
+io.use(wrap(sessionMiddleware))
+io.use(wrap(passport.initialize()))
+io.use(wrap(passport.session()))
+
 app.use(routes)
+socketModule(io, SOCKET_PORT)
+
 server.listen(PORT, () => console.log(`Simple Twitter app listening on port ${PORT}!`))
 
 io.listen(SOCKET_PORT, {
   cors: {
-    origin: ['http://localhost:3000']
+    origin: ['http://localhost:3000'],
+    credentials: true
   }
 })
 
