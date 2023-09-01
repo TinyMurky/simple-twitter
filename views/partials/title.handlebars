@@ -29,4 +29,11 @@
         </div>
     </div>
   </div>
-  {{/ifCond}}
+{{/ifCond}}
+{{#ifCond route 'normal-title'}}
+  <div class="partial-title p-4 flex-shrink-0">
+    <h4 class="m-0">
+      {{titleName}}
+    </h4>
+  </div>
+{{/ifCond}}

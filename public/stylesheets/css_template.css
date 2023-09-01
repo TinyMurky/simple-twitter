@@ -267,6 +267,11 @@
   content: url("/images/icons/home_filled.svg");
 }
 
+.nav-link-chat:hover img,
+.nav-link-chat.active img {
+  content: url("/images/icons/chat_filled.svg");
+}
+
 .nav-link-info:hover img,
 .nav-link-info.active img {
   content: url("/images/icons/user_filled.svg");
@@ -738,6 +743,93 @@
   top: 2px;
   right: 10.55px;
 }
+
+.main-layout #chatroom{
+  height: 100vh;
+}
+
+ .onlineUser {
+    border-bottom: 1px #E6ECF0 solid;
+  }
+  #chatroom #user-status p{
+    padding: 7px 14px;
+    border-radius: 50px;
+    background-color: #E5E5E5;
+
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  #chatroom ul {
+    list-style-type: none;
+  }
+
+  #chatroom ul li img{
+    width: 40px;
+    height: 40px;
+  }
+
+  #chatroom ul #otherUser .chat-message {
+   word-break: break-word;
+   width: 45%; 
+  }
+
+  #chatroom ul #loadingUser {
+   word-break: break-word;
+   margin-left: 55%; 
+  }
+
+  #chatroom ul #otherUser .chat-message{
+   border-radius: 25px 25px 25px 0px;
+
+   font-size: 15px;
+   background-color: #E6ECF0;
+  }
+
+  #chatroom ul #otherUser .send-time {
+    font-size: 13px;
+    color: #657786;
+  }
+
+  #chatroom ul #loadingUser .chat-message{
+   border-radius: 25px 25px 0px 25px; 
+
+   font-size: 15px;
+   color: white;
+   background-color: #ff6600;
+  }
+  #chatroom ul #loadingUser .send-time {
+    font-size: 13px;
+    color: #657786;
+  }
+
+
+  #chatroom form {
+    height: 64px;
+
+    bottom: 0px;
+  }
+
+  #chatroom form input {
+    width: 85%;
+    padding: 3px 16px;
+    border: 0px;
+    border-radius: 50px;
+
+    font-size: 16px;
+    background-color: #E6ECF0;
+  }
+
+  #chatroom form input:focus {
+    outline: none;
+    border: 2px #ff6600 solid;
+  }
+
+  #chatroom form button {
+    padding: 4px 0px;
+    border: none;
+    background: none;
+  }
 
 .partial-title img {
   cursor: pointer;

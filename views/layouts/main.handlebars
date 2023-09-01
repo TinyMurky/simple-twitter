@@ -10,17 +10,19 @@
   <link rel="stylesheet" href="/stylesheets/bootstrap_custom.css">
   <link rel="stylesheet" href="/stylesheets/css_template.css">
   <link rel="stylesheet" href="/stylesheets/errors.css" />
+  <script src="/socket.io/socket.io.js"></script>
   <title>Simple Twitter</title>
 
 <body class="">
   {{!-- 先把error message放在這邊 --}}
   {{> message}}
   <main role="main" class="">
-    <div class="container-lg">
+    <div class="container-lg main-layout">
       {{{body}}}
     </div>
   </main>
 </body>
+
 
 {{#each javascripts}}
   <script src="/javascripts/{{this}}"></script>
