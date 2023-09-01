@@ -2,24 +2,32 @@
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config({ path: '.env' })
 }
+const path = require('path')
+const http = require('http')
+
 const express = require('express')
 const exphbs = require('express-handlebars')
 const methodOverride = require('method-override')
 const passport = require('./config/passport')
-const path = require('path')
 const session = require('express-session')
 const flash = require('connect-flash')
 const cookieParser = require('cookie-parser')
+const { Server } = require('socket.io')
 
 // 自己的套件
 // use helpers.getUser(req) to replace req.user
 // use helpers.ensureAuthenticated(req) to replace req.isAuthenticated()
 const handlebarsHelpers = require('./helpers/handlebars-helpers')
 const routes = require('./routes')
+const { socketModule } = require('./sockets/socket')
 
 // 固定變數
 const app = express()
+const server = http.createServer(app)
+const io = new Server(server)
+
 const PORT = process.env.PORT || 3000
+const SOCKET_PORT = process.env.SOCKET_PORT || 3030
 
 // 檔名結尾叫做handlebars, 主模板:main
 app.engine('handlebars', exphbs.engine({
@@ -53,7 +61,15 @@ app.use((req, res, next) => {
   next()
 })
 
+socketModule(io, SOCKET_PORT)
 app.use(routes)
-app.listen(PORT, () => console.log(`Simple Twitter app listening on port ${PORT}!`))
+server.listen(PORT, () => console.log(`Simple Twitter app listening on port ${PORT}!`))
+
+io.listen(SOCKET_PORT, {
+  cors: {
+    origin: ['http://localhost:3000']
+  }
+})
 
 module.exports = app
+

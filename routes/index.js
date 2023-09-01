@@ -4,6 +4,7 @@ const router = express.Router()
 const admin = require('./modules/admin')
 const tweet = require('./modules/tweet')
 const user = require('./modules/user')
+const chat = require('./modules/chat')
 const api = require('./modules/api')
 
 const { userController } = require('../controllers/pages/user-controller')
@@ -14,10 +15,11 @@ const errorHandler = require('../middlewares/error-handler')
 // passport & auth
 const { userLocalAuth, authenticatedUser } = require('../middlewares/auth')
 
+router.use('/api/users', authenticatedUser, api)
 router.use('/admin', admin)
+router.use('/chat', authenticatedUser, chat)
 router.use('/users', authenticatedUser, user)
 router.use('/tweets', authenticatedUser, tweet)
-router.use('/api/users', authenticatedUser, api)
 
 // user sign in
 router.get('/signin', userController.getLoginPage)
