@@ -29,7 +29,13 @@ const socketModule = (io, port) => {
       onlineUsers.delete(userId)
       io.emit('user disconnect', Array.from(onlineUsers.values()), userId)
     })
+
+    socket.on('chat message', message => {
+      socket.broadcast.emit('receive message', message, user)
+    })
   })
+
+  
 }
 
 

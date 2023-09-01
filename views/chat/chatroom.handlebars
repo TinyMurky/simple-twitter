@@ -11,32 +11,11 @@
   <div class="col px-0 ms-0 me-0 border-end position-relative" id="chatroom">
     {{>title route = 'normal-title' titleName = '公開聊天室'}}
     <ul class="m-0 p-3" id="chat-space">
-      <li class="mb-3" id="otherUser">
-        <div class="d-flex align-items-end gap-2">
-          <img src="/images/icons/ac_icon.svg" alt="" />
-          <div>
-            <p class="chat-message m-0 p-2">
-              12345678977897897897897899999999999999999999999999999999999999999999999999999999
-            </p>
-            <p class="send-time m-0 p-0">下午4:21</p>
-          </div>
-        </div>
-      </li>
-      <li class="mb-3" id="loadingUser">
-        <div class="d-flex justify-content-end align-items-center gap-2">
-          <div>
-            <p class="chat-message m-0 p-2">
-              1234567897789789789789789999999999999999999999999999999999999999
-            </p>
-            <p class="send-time d-flex flex-row-reverse m-0 p-0">下午4:21</p>
-          </div>
-        </div>
-      </li>
     </ul>
     <form
       action=""
-      class="d-flex justify-content-center align-items-center position-absolute border-top w-100 gap-3">
-      <input id="input" autocomplete="off" placeholder="輸入訊息..." class="" />
+      class="d-flex justify-content-center align-items-center position-absolute border-top w-100 gap-3" id="send-message">
+      <input id="message-input" autocomplete="off" placeholder="輸入訊息..." class="" />
       <button class="p-0">
         <img src="/images/icons/send.svg" alt="" />
       </button>
@@ -44,20 +23,13 @@
   </div>
 </div>
 
-<style>
-  #online-board img {
-    width: 40px;
-    height: 40px;
-    
-    border-radius: 50%;
-  }
-</style>
-
 
 <script>
     const onlineBoardTitle = document.querySelectorAll('.partial-title')[0]
     const onlineBoard = document.querySelector('#online-board')
     const chatSpace = document.querySelector('#chat-space')
+    const sendMessage = document.querySelector('#send-message')
+    const messageInput = document.querySelector('#message-input')
     
     const socket = io('http://localhost:3030', {
       withCredentials: true
@@ -123,6 +95,70 @@
          上線使用者(${countOnlineUsers})
         </h4>
       `
+    })
+
+    sendMessage.addEventListener('submit', event => {
+      event.preventDefault()
+      
+      const message = messageInput.value
+      const currentTime = dayjs()
+      const formattedTime = currentTime.format('Ah:mm')
+        .replace('PM', '下午')
+        .replace('AM', '上午')
+
+      if(message) {
+        const messageHtml = `
+        <li class="mb-3" id="loadingUser">
+        <div class="d-flex justify-content-end align-items-center gap-2">
+          <div>
+            <p class="chat-message m-0 p-2">
+              ${message}
+            </p>
+            <p class="send-time d-flex flex-row-reverse m-0 p-0">${formattedTime}</p>
+          </div>
+        </div>
+      </li>
+        `
+        const tempElement = document.createElement('div')
+        tempElement.innerHTML = messageHtml
+
+        const messageElement = tempElement.querySelector('li')
+
+        chatSpace.appendChild(messageElement)
+
+        socket.emit('chat message', message)
+
+        messageInput.value = ''
+      }
+    })
+
+    socket.on('receive message', (message, user) => {
+      console.log(message)
+      const currentTime = dayjs()
+      const formattedTime = currentTime.format('Ah:mm')
+        .replace('PM', '下午')
+        .replace('AM', '上午')
+
+      const messageHtml = `
+        <li class="mb-3" id="otherUser">
+        <div class="d-flex align-items-end gap-2">
+          <img src="${user.avatar}" alt="" />
+          <div>
+            <p class="chat-message m-0 p-2">
+              ${message}
+            </p>
+            <p class="send-time m-0 p-0">${formattedTime}</p>
+          </div>
+        </div>
+        </li>
+        `
+
+        const tempElement = document.createElement('div')
+        tempElement.innerHTML = messageHtml
+
+        const messageElement = tempElement.querySelector('li')
+
+        chatSpace.appendChild(messageElement)
     })
 </script>
 

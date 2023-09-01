@@ -767,11 +767,13 @@
   #chatroom ul li img{
     width: 40px;
     height: 40px;
+
+    border-radius: 50%;
   }
 
-  #chatroom ul #otherUser .chat-message {
+  #chatroom ul #otherUser {
    word-break: break-word;
-   width: 45%; 
+   margin-right: 55%; 
   }
 
   #chatroom ul #loadingUser {
@@ -833,4 +835,11 @@
 
 .partial-title img {
   cursor: pointer;
+}
+
+#online-board img {
+    width: 40px;
+    height: 40px;
+    
+    border-radius: 50%;
 }
