@@ -13,6 +13,7 @@ const session = require('express-session')
 const flash = require('connect-flash')
 const cookieParser = require('cookie-parser')
 const { Server } = require('socket.io')
+require('./config/mongoose')
 
 // 自己的套件
 // use helpers.getUser(req) to replace req.user
