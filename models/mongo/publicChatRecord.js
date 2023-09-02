@@ -1,26 +1,24 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
-const chatRecordSchema = new Schema({
+const publicChatRecordSchema = new Schema({
   message: {
     type: String,
     required : true
   },
-  roomNumber: {
-    type: String
+  avatar: {
+    type: String,
+    required: true
   },
   sender: {
     type: Number,
     required : true
   },
-  receiver: {
-    type: Number
-  },
   createdAt: {
     type: Date,
-    default: Date.now
+    default: Date.now()
   }
 })
 
 
-module.exports = mongoose.model('ChatRecord', chatRecordSchema)
+module.exports = mongoose.model('public_chat_records', publicChatRecordSchema)
