@@ -272,6 +272,11 @@
   content: url("/images/icons/chat_filled.svg");
 }
 
+.nav-link-private-chat:hover img,
+.nav-link-private-chat.active img {
+  content: url("/images/icons/message_filled.svg");
+}
+
 .nav-link-info:hover img,
 .nav-link-info.active img {
   content: url("/images/icons/user_filled.svg");
