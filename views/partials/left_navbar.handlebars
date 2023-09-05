@@ -14,6 +14,24 @@
         </a>
       </li>
       <li class="nav-item">
+        <a href="/chat" aria-current="{{#ifCond route 'public-chat'}}page{{/ifCond}}"
+          class="{{#ifCond route 'public-chat'}}active{{/ifCond}} nav-link nav-link-chat link-unstyled d-flex justify-content-start align-items-center ">
+          <div class="nav-link-content d-flex justify-content-between gap-3 align-items-start pt-1">
+            <img src="/images/icons/chat_outlined.svg" alt="">
+            <p class=" p-0 m-0">公開聊天室</p>
+          </div>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="/chat/private" aria-current="{{#ifCond route 'private-chat'}}page{{/ifCond}}"
+          class="{{#ifCond route 'private-chat'}}active{{/ifCond}} nav-link nav-link-private-chat link-unstyled d-flex justify-content-start align-items-center ">
+          <div class="nav-link-content d-flex justify-content-between gap-3 align-items-start pt-1">
+            <img src="/images/icons/message_outlined.svg" alt="">
+            <p class=" p-0 m-0">私人訊息</p>
+          </div>
+        </a>
+      </li>
+      <li class="nav-item">
         <a href="/users/{{user.id}}/tweets" aria-current="{{#ifCond route 'user'}}page{{/ifCond}}"
           class="{{#ifCond route 'user'}}active{{/ifCond}} nav-link nav-link-info link-unstyled d-flex justify-content-start align-items-center ">
           <div class="nav-link-content d-flex justify-content-between gap-3 align-items-start pt-1">

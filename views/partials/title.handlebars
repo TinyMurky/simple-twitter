@@ -5,6 +5,7 @@
     </h4>
   </div>
 {{/ifCond}}
+
 {{#ifCond route 'user'}}
   <div class="partial-title px-4 py-3 flex-shrink-0">
     <div class="d-flex gap-3 justify-content-start align-items-center h-43px p-0 m-0">
@@ -18,6 +19,7 @@
     </div>
   </div>
 {{/ifCond}}
+
 {{#ifCond route 'replies'}}
   <div class="partial-title p-4 flex-shrink-0">
     <div class="d-flex gap-3 p-0 m-0 h-26px justify-content-start align-items-center">
@@ -29,4 +31,25 @@
         </div>
     </div>
   </div>
-  {{/ifCond}}
+{{/ifCond}}
+
+{{#ifCond route 'normal-title'}}
+  <div class="partial-title p-4 flex-shrink-0">
+    <h4 class="m-0">
+      {{titleName}}
+    </h4>
+  </div>
+{{/ifCond}}
+
+{{#ifCond route 'message-to'}}
+  <div class="partial-title px-4 py-2 flex-shrink-0">
+    <div>
+      <h4 class="m-0">
+        {{receiverName}}
+      </h4>
+      <p class="text-secondary mb-2">
+        @{{receiverAccount}}
+      </p>
+    </div>
+  </div>
+{{/ifCond}}

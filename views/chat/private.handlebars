@@ -1,0 +1,71 @@
+<div class="row">
+  <div id="me" data-id="{{user.id}}"></div>
+  <div class="col-2 px-0 me-4 d-flex flex-column align-items-end">
+    {{>left_navbar route='private-chat'}}
+  </div>
+  <div class="col-4 border-end border-start px-0 mx-0" >
+    {{>title route = 'normal-title' titleName = '訊息'}}
+    <div id="private-messages-list">
+      <div class="d-flex justify-content-between align-items-start p-3 fs-6 onlineUser" id="user${user.id}">
+          <div class="d-flex justify-content-start align-items-center gap-2 fs-6">
+            <div>
+              <img src="/images/icons/ac_icon.svg" alt="" />
+            </div>
+            <div>
+              <div class="d-flex justify-content-start align-items-center gap-1">
+                <p class="m-0 p-0">Egg</p>
+                <p class="text-secondary m-0 p-0">@egg</p>
+              </div>
+              <div>
+                <p class="m-0 p-0 text-secondary font-size-sm private-msg">0123456789012345678901234567890123456789</p>
+              </div>
+            </div>
+          </div>
+          <div>
+              <p class="m-0 p-0 text-secondary font-size-sm msg-time">5秒</p>
+          </div>
+      </div>
+    </div>
+  </div>
+  <div class="col px-0 ms-0 me-0 border-end position-relative" id="chatroom">
+    {{>title route = 'message-to'}}
+    <ul class="m-0 p-3" id="chat-space">
+    </ul>
+    <form
+      action=""
+      class="d-flex justify-content-center align-items-center position-absolute border-top w-100 gap-3" id="send-message">
+      <input id="message-input" autocomplete="off" placeholder="輸入訊息..." class="" />
+      <button class="p-0">
+        <img src="/images/icons/send.svg" alt="" />
+      </button>
+    </form>
+  </div>
+</div>
+
+<style>
+  #private-messages-list {
+   
+  }
+  .msg-time {
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  .private-msg {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 150px;
+  }
+
+</style>
+
+<script>
+  const socket = io('http://localhost:3030', {
+      withCredentials: true
+    })
+
+  
+  
+
+</script>

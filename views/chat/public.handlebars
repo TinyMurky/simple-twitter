@@ -1,0 +1,223 @@
+<div class="row">
+  <div id="me" data-id="{{user.id}}"></div>
+  <div class="col-2 px-0 me-4 d-flex flex-column align-items-end">
+    {{>left_navbar route='public-chat'}}
+  </div>
+  <div class="col-3 border-end border-start px-0 mx-0" >
+    {{>title route = 'normal-title' titleName = '上線使用者'}}
+    <div id="online-board">
+
+    </div>
+  </div>
+  <div class="col px-0 ms-0 me-0 border-end position-relative" id="chatroom">
+    {{>title route = 'normal-title' titleName = '公開聊天室'}}
+    <ul class="m-0 p-3" id="chat-space">
+    </ul>
+    <form
+      action=""
+      class="d-flex justify-content-center align-items-center position-absolute border-top w-100 gap-3" id="send-message">
+      <input id="message-input" autocomplete="off" placeholder="輸入訊息..." class="" />
+      <button class="p-0">
+        <img src="/images/icons/send.svg" alt="" />
+      </button>
+    </form>
+  </div>
+</div>
+
+
+<script>
+    const onlineBoardTitle = document.querySelectorAll('.partial-title')[0]
+    const onlineBoard = document.querySelector('#online-board')
+    const chatSpace = document.querySelector('#chat-space')
+    const sendMessage = document.querySelector('#send-message')
+    const messageInput = document.querySelector('#message-input')
+    const me = Number(document.querySelector('#me').dataset.id)
+
+    function parsedTime(isoString) {
+      const parsedTime = isoString? dayjs(isoString) : dayjs()
+      const formattedTime = parsedTime.format('Ah:mm')
+            .replace('PM', '下午')
+            .replace('AM', '上午')
+
+      return formattedTime
+    }
+
+    const socket = io('http://localhost:3030', {
+      withCredentials: true
+    })
+
+    socket.on('show history', (history) => {
+      chatSpace.innerHTML = ''
+
+      history.forEach(record => {
+        if(record.sender === me) {
+          const recordTime = parsedTime(record.createdAt)
+
+          const messageHtml = `
+          <li class="mb-3" id="loadingUser">
+            <div class="d-flex justify-content-end align-items-center gap-2">
+              <div>
+                <p class="chat-message m-0 p-2">
+                  ${record.message}
+                </p>
+                <p class="send-time d-flex flex-row-reverse m-0 p-0">${recordTime}</p>
+              </div>
+            </div>
+          </li>
+        `
+        const tempElement = document.createElement('div')
+        tempElement.innerHTML = messageHtml
+
+        const messageElement = tempElement.querySelector('li')
+
+        chatSpace.appendChild(messageElement)
+        } else {
+          const recordTime = parsedTime(record.createdAt)
+
+          const messageHtml = `
+          <li class="mb-3" id="otherUser">
+            <div class="d-flex align-items-end gap-2">
+              <img src="${record.avatar}" alt="" />
+              <div>
+                <p class="chat-message m-0 p-2">
+                  ${record.message}
+                </p>
+                <p class="send-time m-0 p-0">${recordTime}</p>
+              </div>
+            </div>
+          </li>
+          `
+
+          const tempElement = document.createElement('div')
+          tempElement.innerHTML = messageHtml
+
+          const messageElement = tempElement.querySelector('li')
+
+          chatSpace.appendChild(messageElement)
+        }
+      })
+    })
+
+    socket.on('show user online', onlineUsers => {
+      // 顯示在線的使用者
+      const countOnlineUsers = onlineUsers.length
+
+      onlineBoard.innerHTML = ''
+      onlineBoardTitle.innerHTML = ''
+      
+      for (const user of onlineUsers.values()) {
+         const onlineUserHtml = `
+        <div
+        class="d-flex justify-content-start align-items-center gap-2 p-3 fs-6 onlineUser" id="user${user.id}">
+          <img src="${user.avatar}" alt="" />
+          <p class="m-0 p-0">${user.name}</p>
+          <p class="text-secondary m-0 p-0">@${user.account}</p>
+          </div>
+        `
+        const newLoginUserElement = document.createElement('div')
+        newLoginUserElement.innerHTML = onlineUserHtml
+
+        onlineBoard.appendChild(newLoginUserElement)
+      }
+
+      onlineBoardTitle.innerHTML = `
+        <h4 class="m-0">
+         上線使用者(${countOnlineUsers})
+        </h4>
+      `
+    })
+
+    socket.on('user connect', user => {
+      // 使用者上線時，在聊天室顯示提示訊息
+      const connectMessage = `
+          <li
+          class="d-flex justify-content-center align-items-center"
+          id="user-status">
+            <p>${user.name} 上線</p>
+          </li>
+        `
+      var connectMessageElement = document.createElement('div')
+      connectMessageElement.innerHTML = connectMessage
+      connectMessageElement = connectMessageElement.querySelector('li')
+
+      chatSpace.appendChild(connectMessageElement)
+    })
+
+    //使用者下線時，將使用者從上線清單中移除
+    socket.on('user disconnect', (onlineUsers, user) => {
+      const disconnectUser = document.querySelector(`#user${user}`)
+      const countOnlineUsers = onlineUsers.length
+      console.log(onlineUsers)
+
+      onlineBoardTitle.innerHTML = ''
+
+      disconnectUser.remove() 
+
+      onlineBoardTitle.innerHTML = `
+        <h4 class="m-0">
+         上線使用者(${countOnlineUsers})
+        </h4>
+      `
+    })
+
+    sendMessage.addEventListener('submit', event => {
+      event.preventDefault()
+      
+      const message = messageInput.value
+      const currentTime = parsedTime()
+
+      if(message) {
+        const messageHtml = `
+        <li class="mb-3" id="loadingUser">
+        <div class="d-flex justify-content-end align-items-center gap-2">
+          <div>
+            <p class="chat-message m-0 p-2">
+              ${message}
+            </p>
+            <p class="send-time d-flex flex-row-reverse m-0 p-0">${currentTime}</p>
+          </div>
+        </div>
+      </li>
+        `
+        const tempElement = document.createElement('div')
+        tempElement.innerHTML = messageHtml
+
+        const messageElement = tempElement.querySelector('li')
+
+        chatSpace.appendChild(messageElement)
+
+        socket.emit('chat message', message)
+
+        messageInput.value = ''
+      }
+    })
+
+    socket.on('receive message', (message, user) => {
+      console.log(message)
+      
+      const currentTime = parsedTime()
+
+      const messageHtml = `
+        <li class="mb-3" id="otherUser">
+          <div class="d-flex align-items-end gap-2">
+            <img src="${user.avatar}" alt="" />
+            <div>
+              <p class="chat-message m-0 p-2">
+                ${message}
+              </p>
+              <p class="send-time m-0 p-0">${currentTime}</p>
+            </div>
+          </div>
+        </li>
+        `
+
+        const tempElement = document.createElement('div')
+        tempElement.innerHTML = messageHtml
+
+        const messageElement = tempElement.querySelector('li')
+
+        chatSpace.appendChild(messageElement)
+    })
+</script>
+
+
